@@ -23,226 +23,124 @@ const SHEET_ID = process.env.SHEET_ID;
 const SHEET_LOSA_DATA = "Sheet1";
 
 // ---------------- FIXED SCHEMA DEFINITION (กำหนดลำดับ Column ที่แน่นอน) ----------------
-// อัปเดต Array ด้วย 216 Headers ที่คุณระบุมา และย้าย serverTimestamp มาไว้ด้านหน้า
+// อัปเดต Array ด้วย 219 Headers ตามลำดับใหม่ที่คุณระบุ (รวม serverTimestamp)
 const FIXED_HEADERS = [
-    "serverTimestamp",        // 1. (A) Server Timestamp (สำหรับการตรวจสอบ)
-    "observationDate",        // 2. (B)
-    "flightNumber",           // 3. (C)
-    "NewrouteFrom",           // 4. (D)
-    "routeTo",                // 5. (E)
-    "aircraftType",           // 6. (F)
-    "observerId",             // 7. (G)
-    "crewObserved",           // 8. (H)
-    "loadFactor",             // 9. (I)
-    "inspectorName",          // 10. (J)
-    "A11_Narrative",          // 11. (K)
-    "A12_Narrative",          // 12. (L)
-    "A13_Narrative",          // 13. (M)
-    "A14_Narrative",          // 14. (N)
-    "A15_Narrative",          // 15. (O)
-    "A16_Narrative",          // 16. (P)
-    "A17_Narrative",          // 17. (Q)
-    "A21_Narrative",          // 18. (R)
-    "A22_Narrative",          // 19. (S)
-    "A23_Narrative",          // 20. (T)
-    "A24_Narrative",          // 21. (U)
-    "A25_Narrative",          // 22. (V)
-    "A31_Narrative",          // 23. (W)
-    "A32_Narrative",          // 24. (X)
-    "A33_Narrative",          // 25. (Y)
-    "A34_Narrative",          // 26. (Z)
-    "A35_Narrative",          // 27. (AA)
-    "A36_Narrative",          // 28. (AB)
-    "B11_Narrative",          // 29. (AC)
-    "B12_Narrative",          // 30. (AD)
-    "B13_Narrative",          // 31. (AE)
-    "B14_Narrative",          // 32. (AF)
-    "B15_Narrative",          // 33. (AG)
-    "B21_Narrative",          // 34. (AH)
-    "B22_Narrative",          // 35. (AI)
-    "B23_Narrative",          // 36. (AJ)
-    "B24_Narrative",          // 37. (AK)
-    "B25_Narrative",          // 38. (AL)
-    "B26_Narrative",          // 39. (AM)
-    "B31_Narrative",          // 40. (AN)
-    "B32_Narrative",          // 41. (AO)
-    "C11_Narrative",          // 42. (AP)
-    "C12_Narrative",          // 43. (AQ)
-    "C13_Narrative",          // 44. (AR)
-    "C14_Narrative",          // 45. (AS)
-    "C21_Narrative",          // 46. (AT)
-    "C22_Narrative",          // 47. (AU)
-    "C23_Narrative",          // 48. (AV)
-    "D11_Narrative",          // 49. (AW)
-    "D12_Narrative",          // 50. (AX)
-    "D21_Narrative",          // 51. (AY)
-    "D22_Narrative",          // 52. (AZ)
-    "D23_Narrative",          // 53. (BA)
-    "D24_Narrative",          // 54. (BB)
-    "D31_Narrative",          // 55. (BC)
-    "D32_Narrative",          // 56. (BD)
-    "D33_Narrative",          // 57. (BE)
-    "D41_Narrative",          // 58. (BF)
-    "D51_Narrative",          // 59. (BG)
-    "D52_Narrative",          // 60. (BH)
-    "E11_Narrative",          // 61. (BI)
-    "E21_Narrative",          // 62. (BJ)
-    "E22_Narrative",          // 63. (BK)
-    "E23_Narrative",          // 64. (BL)
-    "E24_Narrative",          // 65. (BM)
-    "E3_Narrative",           // 66. (BN)
-    "E41_Narrative",          // 67. (BO)
-    "F11_Narrative",          // 68. (BP)
-    "F12_Narrative",          // 69. (BQ)
-    "F13_Narrative",          // 70. (BR)
-    "F14_Narrative",          // 71. (BS)
-    "F21_Narrative",          // 72. (BT)
-    "F22_Narrative",          // 73. (BU)
-    "F23_Narrative",          // 74. (BV)
-    "F24_Narrative",          // 75. (BW)
-    "F31_Narrative",          // 76. (BX)
-    "F32_Narrative",          // 77. (BY)
-    "F33_Narrative",          // 78. (BZ)
-    "G11_Narrative",          // 79. (CA)
-    "G12_Narrative",          // 80. (CB)
-    "G13_Narrative",          // 81. (CC)
-    "G21_Narrative",          // 82. (CD)
-    // Summary Fields (จากส่วนที่ถูกรวม)
-    "sigThreat",              // 83. (CE)
-    "sigError",               // 84. (CF)
-    "effectiveCm",            // 85. (CG)
-    "generalComments",        // 86. (CH)
-    "areasOfStrength",        // 87. (CI)
-    "opportunitiesForImprovement", // 88. (CJ)
-    "observerSignature",      // 89. (CK)
-    "reportCompletionDate",   // 90. (CL)
-    "submissionTimestamp",    // 91. (CM)
-    "completedSteps",         // 92. (CN)
-    "A36_E",                  // 93. (CO)
-    "A36_U",                  // 94. (CP)
-    "A36_C",                  // 95. (CQ)
-    "A36_Narrative",          // 96. (CR)
-    "B11_SOP",                // 97. (CS)
-    "B11_T",                  // 98. (CT)
-    "B11_E",                  // 99. (CU)
-    "B11_U",                  // 100. (CV)
-    "B11_C",                  // 101. (CW)
-    "B11_Narrative",          // 102. (CX)
-    "B12_SOP",                // 103. (CY)
-    "B12_T",                  // 104. (CZ)
-    "B12_E",                  // 105. (DA)
-    "B12_U",                  // 106. (DB)
-    "B12_C",                  // 107. (DC)
-    "B12_Narrative",          // 108. (DD)
-    "B13_SOP",                // 109. (DE)
-    "B13_T",                  // 110. (DF)
-    "B13_E",                  // 111. (DG)
-    "B13_U",                  // 112. (DH)
-    "B13_C",                  // 113. (DI)
-    "B13_Narrative",          // 114. (DJ)
-    "B14_SOP",                // 115. (DK)
-    "B14_T",                  // 116. (DL)
-    "B14_E",                  // 117. (DM)
-    "B14_U",                  // 118. (DN)
-    "B14_C",                  // 119. (DO)
-    "B14_Narrative",          // 120. (DP)
-    "B15_SOP",                // 121. (DQ)
-    "B15_T",                  // 122. (DR)
-    "B15_E",                  // 123. (DS)
-    "B15_U",                  // 124. (DT)
-    "B15_C",                  // 125. (DU)
-    "B15_Narrative",          // 126. (DV)
-    "B21_SOP",                // 127. (DW)
-    "B21_T",                  // 128. (DX)
-    "B21_E",                  // 129. (DY)
-    "B21_U",                  // 130. (DZ)
-    "B21_C",                  // 131. (EA)
-    "B21_Narrative",          // 132. (EB)
-    "B22_SOP",                // 133. (EC)
-    "B22_T",                  // 134. (ED)
-    "B22_E",                  // 135. (EE)
-    "B22_U",                  // 136. (EF)
-    "B22_C",                  // 137. (EG)
-    "B22_Narrative",          // 138. (EH)
-    "B23_SOP",                // 139. (EI)
-    "B23_T",                  // 140. (EJ)
-    "B23_E",                  // 141. (EK)
-    "B23_U",                  // 142. (EL)
-    "B23_C",                  // 143. (EM)
-    "B23_Narrative",          // 144. (EN)
-    "B24_SOP",                // 145. (EO)
-    "B24_T",                  // 146. (EP)
-    "B24_E",                  // 147. (EQ)
-    "B24_U",                  // 148. (ER)
-    "B24_C",                  // 149. (ES)
-    "B24_Narrative",          // 150. (ET)
-    "B25_SOP",                // 151. (EU)
-    "B25_T",                  // 152. (EV)
-    "B25_E",                  // 153. (EW)
-    "B25_U",                  // 154. (EX)
-    "B25_C",                  // 155. (EY)
-    "B25_Narrative",          // 156. (EZ)
-    "B26_SOP",                // 157. (FA)
-    "B26_T",                  // 158. (FB)
-    "B26_E",                  // 159. (FC)
-    "B26_U",                  // 160. (FD)
-    "B26_C",                  // 161. (FE)
-    "B26_Narrative",          // 162. (FF)
-    "B31_SOP",                // 163. (FG)
-    "B31_T",                  // 164. (FH)
-    "B31_E",                  // 165. (FI)
-    "B31_U",                  // 166. (FJ)
-    "B31_C",                  // 167. (FK)
-    "B31_Narrative",          // 168. (FL)
-    "B32_SOP",                // 169. (FM)
-    "B32_T",                  // 170. (FN)
-    "B32_E",                  // 171. (FO)
-    "B32_U",                  // 172. (FP)
-    "B32_C",                  // 173. (FQ)
-    "B32_Narrative",          // 174. (FR)
-    "C11_SOP",                // 175. (FS)
-    "C11_T",                  // 176. (FT)
-    "C11_E",                  // 177. (FU)
-    "C11_U",                  // 178. (FV)
-    "C11_C",                  // 179. (FW)
-    "C11_Narrative",          // 180. (FX)
-    "C12_SOP",                // 181. (FY)
-    "C12_T",                  // 182. (FZ)
-    "C12_E",                  // 183. (GA)
-    "C12_U",                  // 184. (GB)
-    "C12_C",                  // 185. (GC)
-    "C12_Narrative",          // 186. (GD)
-    "C13_SOP",                // 187. (GE)
-    "C13_T",                  // 188. (GF)
-    "C13_E",                  // 189. (GG)
-    "C13_U",                  // 190. (GH)
-    "C13_C",                  // 191. (GI)
-    "C13_Narrative",          // 192. (GJ)
-    "C14_SOP",                // 193. (GK)
-    "C14_T",                  // 194. (GL)
-    "C14_E",                  // 195. (GM)
-    "C14_U",                  // 196. (GN)
-    "C14_C",                  // 197. (GO)
-    "C14_Narrative",          // 198. (GP)
-    "C21_SOP",                // 199. (GQ)
-    "C21_T",                  // 200. (GR)
-    "C21_E",                  // 201. (GS)
-    "C21_U",                  // 202. (GT)
-    "C21_C",                  // 203. (GU)
-    "C21_Narrative",          // 204. (GV)
-    "C22_SOP",                // 205. (GW)
-    "C22_T",                  // 206. (GX)
-    "C22_E",                  // 207. (GY)
-    "C22_U",                  // 208. (GZ)
-    "C22_C",                  // 209. (HA)
-    "C22_Narrative",          // 210. (HB)
-    "C23_SOP",                // 211. (HC)
-    "C23_T",                  // 212. (HD)
-    "C23_E",                  // 213. (HE)
-    "C23_U",                  // 214. (HF)
-    "C23_C",                  // 215. (HG)
-    "C23_Narrative",          // 216. (HH)
-    // หมายเหตุ: โค้ดเดิมมีการตั้งค่า range A1:ZZ1 ซึ่งครอบคลุมถึงคอลัมน์ GH เรียบร้อยแล้ว
+    // Server Control Field
+    "serverTimestamp",          // 1. (A) Server Timestamp (สำหรับการตรวจสอบ)
+    // Core Report Info
+    "submissionTimestamp",      // 2. (B)
+    "observationDate",          // 3. (C)
+    "flightNumber",             // 4. (D)
+    "NewinspectorName",         // 5. (E)
+    "routeFrom",                // 6. (F)
+    "routeTo",                  // 7. (G)
+    "aircraftType",             // 8. (H)
+    "observerId",               // 9. (I)
+    "crewObserved",             // 10. (J)
+    "loadFactor",               // 11. (K)
+    // Section A1: Cockpit Preparation (7 items * 6 fields = 42)
+    "A11_SOP", "A11_T", "A11_E", "A11_U", "A11_C", "A11_Narrative", 
+    "A12_SOP", "A12_T", "A12_E", "A12_U", "A12_C", "A12_Narrative", 
+    "A13_SOP", "A13_T", "A13_E", "A13_U", "A13_C", "A13_Narrative", 
+    "A14_SOP", "A14_T", "A14_E", "A14_U", "A14_C", "A14_Narrative", 
+    "A15_SOP", "A15_T", "A15_E", "A15_U", "A15_C", "A15_Narrative", 
+    "A16_SOP", "A16_T", "A16_E", "A16_U", "A16_C", "A16_Narrative", 
+    "A17_SOP", "A17_T", "A17_E", "A17_U", "A17_C", "A17_Narrative",
+    // Section A2: Take-off Preparation (5 items * 6 fields = 30)
+    "A21_SOP", "A21_T", "A21_E", "A21_U", "A21_C", "A21_Narrative",
+    "A22_SOP", "A22_T", "A22_E", "A22_U", "A22_C", "A22_Narrative",
+    "A23_SOP", "A23_T", "A23_E", "A23_U", "A23_C", "A23_Narrative",
+    "A24_SOP", "A24_T", "A24_E", "A24_U", "A24_C", "A24_Narrative",
+    "A25_SOP", "A25_T", "A25_E", "A25_U", "A25_C", "A25_Narrative",
+    // Section A3: Pushback/Taxi (6 items * 6 fields = 36)
+    "A31_SOP", "A31_T", "A31_E", "A31_U", "A31_C", "A31_Narrative",
+    "A32_SOP", "A32_T", "A32_E", "A32_U", "A32_C", "A32_Narrative",
+    "A33_SOP", "A33_T", "A33_E", "A33_U", "A33_C", "A33_Narrative",
+    "A34_SOP", "A34_T", "A34_E", "A34_U", "A34_C", "A34_Narrative",
+    "A35_SOP", "A35_T", "A35_E", "A35_U", "A35_C", "A35_Narrative",
+    "A36_SOP", "A36_T", "A36_E", "A36_U", "A36_C", "A36_Narrative",
+    // Section B1: Take-off/Initial Climb (5 items * 6 fields = 30)
+    "B11_SOP", "B11_T", "B11_E", "B11_U", "B11_C", "B11_Narrative",
+    "B12_SOP", "B12_T", "B12_E", "B12_U", "B12_C", "B12_Narrative",
+    "B13_SOP", "B13_T", "B13_E", "B13_U", "B13_C", "B13_Narrative",
+    "B14_SOP", "B14_T", "B14_E", "B14_U", "B14_C", "B14_Narrative",
+    "B15_SOP", "B15_T", "B15_E", "B15_U", "B15_C", "B15_Narrative",
+    // Section B2: Climb/Cruise/Descent (6 items * 6 fields = 36)
+    "B21_SOP", "B21_T", "B21_E", "B21_U", "B21_C", "B21_Narrative",
+    "B22_SOP", "B22_T", "B22_E", "B22_U", "B22_C", "B22_Narrative",
+    "B23_SOP", "B23_T", "B23_E", "B23_U", "B23_C", "B23_Narrative",
+    "B24_SOP", "B24_T", "B24_E", "B24_U", "B24_C", "B24_Narrative",
+    "B25_SOP", "B25_T", "B25_E", "B25_U", "B25_C", "B25_Narrative",
+    "B26_SOP", "B26_T", "B26_E", "B26_U", "B26_C", "B26_Narrative",
+    // Section B3: Approach Preparation (2 items * 6 fields = 12)
+    "B31_SOP", "B31_T", "B31_E", "B31_U", "B31_C", "B31_Narrative",
+    "B32_SOP", "B32_T", "B32_E", "B32_U", "B32_C", "B32_Narrative",
+    // Section C1: Terminal Manoeuvring (4 items * 6 fields = 24)
+    "C11_SOP", "C11_T", "C11_E", "C11_U", "C11_C", "C11_Narrative",
+    "C12_SOP", "C12_T", "C12_E", "C12_U", "C12_C", "C12_Narrative",
+    "C13_SOP", "C13_T", "C13_E", "C13_U", "C13_C", "C13_Narrative",
+    "C14_SOP", "C14_T", "C14_E", "C14_U", "C14_C", "C14_Narrative",
+    // Section C2: Landing/Rollout (3 items * 6 fields = 18)
+    "C21_SOP", "C21_T", "C21_E", "C21_U", "C21_C", "C21_Narrative",
+    "C22_SOP", "C22_T", "C22_E", "C22_U", "C22_C", "C22_Narrative",
+    "C23_SOP", "C23_T", "C23_E", "C23_U", "C23_C", "C23_Narrative",
+    // Section D1: Planning (2 items * 6 fields = 12)
+    "D11_SOP", "D11_T", "D11_E", "D11_U", "D11_C", "D11_Narrative",
+    "D12_SOP", "D12_T", "D12_E", "D12_U", "D12_C", "D12_Narrative",
+    // Section D2: Execution (4 items * 6 fields = 24)
+    "D21_SOP", "D21_T", "D21_E", "D21_U", "D21_C", "D21_Narrative",
+    "D22_SOP", "D22_T", "D22_E", "D22_U", "D22_C", "D22_Narrative",
+    "D23_SOP", "D23_T", "D23_E", "D23_U", "D23_C", "D23_Narrative",
+    "D24_SOP", "D24_T", "D24_E", "D24_U", "D24_C", "D24_Narrative",
+    // Section D3: Review (3 items * 6 fields = 18)
+    "D31_SOP", "D31_T", "D31_E", "D31_U", "D31_C", "D31_Narrative",
+    "D32_SOP", "D32_T", "D32_E", "D32_U", "D32_C", "D32_Narrative",
+    "D33_SOP", "D33_T", "D33_E", "D33_U", "D33_C", "D33_Narrative",
+    // Section D4: Workload Management (1 item * 6 fields = 6)
+    "D41_SOP", "D41_T", "D41_E", "D41_U", "D41_C", "D41_Narrative",
+    // Section D5: Automation Management (2 items * 6 fields = 12)
+    "D51_SOP", "D51_T", "D51_E", "D51_U", "D51_C", "D51_Narrative",
+    "D52_SOP", "D52_T", "D52_E", "D52_U", "D52_C", "D52_Narrative",
+    // Section E1: Leadership (1 item * 6 fields = 6)
+    "E11_SOP", "E11_T", "E11_E", "E11_U", "E11_C", "E11_Narrative",
+    // Section E2: Monitoring (4 items * 6 fields = 24)
+    "E21_SOP", "E21_T", "E21_E", "E21_U", "E21_C", "E21_Narrative",
+    "E22_SOP", "E22_T", "E22_E", "E22_U", "E22_C", "E22_Narrative",
+    "E23_SOP", "E23_T", "E23_E", "E23_U", "E23_C", "E23_Narrative",
+    "E24_SOP", "E24_T", "E24_E", "E24_U", "E24_C", "E24_Narrative",
+    // Section E3: Briefings/Communication (1 item * 6 fields = 6)
+    "E3_SOP", "E3_T", "E3_E", "E3_U", "E3_C", "E3_Narrative",
+    // Section E4: Contingency Planning (1 item * 6 fields = 6)
+    "E41_SOP", "E41_T", "E41_E", "E41_U", "E41_C", "E41_Narrative",
+    // Section F1: Callouts/Checklist (4 items * 6 fields = 24)
+    "F11_SOP", "F11_T", "F11_E", "F11_U", "F11_C", "F11_Narrative",
+    "F12_SOP", "F12_T", "F12_E", "F12_U", "F12_C", "F12_Narrative",
+    "F13_SOP", "F13_T", "F13_E", "F13_U", "F13_C", "F13_Narrative",
+    "F14_SOP", "F14_T", "F14_E", "F14_U", "F14_C", "F14_Narrative",
+    // Section F2: Callouts/Checklist (4 items * 6 fields = 24)
+    "F21_SOP", "F21_T", "F21_E", "F21_U", "F21_C", "F21_Narrative",
+    "F22_SOP", "F22_T", "F22_E", "F22_U", "F22_C", "F22_Narrative",
+    "F23_SOP", "F23_T", "F23_E", "F23_U", "F23_C", "F23_Narrative",
+    "F24_SOP", "F24_T", "F24_E", "F24_U", "F24_C", "F24_Narrative",
+    // Section F3: Communication with ATC/Dispatch (3 items * 6 fields = 18)
+    "F31_SOP", "F31_T", "F31_E", "F31_U", "F31_C", "F31_Narrative",
+    "F32_SOP", "F32_T", "F32_E", "F32_U", "F32_C", "F32_Narrative",
+    "F33_SOP", "F33_T", "F33_E", "F33_U", "F33_C", "F33_Narrative",
+    // Section G1: SOP/Rules Compliance (3 items * 6 fields = 18)
+    "G11_SOP", "G11_T", "G11_E", "G11_U", "G11_C", "G11_Narrative",
+    "G12_SOP", "G12_T", "G12_E", "G12_U", "G12_C", "G12_Narrative",
+    "G13_SOP", "G13_T", "G13_E", "G13_U", "G13_C", "G13_Narrative",
+    // Section G2: Non-Compliance (1 item * 6 fields = 6)
+    "G21_SOP", "G21_T", "G21_E", "G21_U", "G21_C", "G21_Narrative",
+    // Summary/Comments Fields
+    "sigThreat", 
+    "sigError", 
+    "effectiveCm", 
+    "generalComments", 
+    "areasOfStrength", 
+    "opportunitiesForImprovement", 
+    "observerSignature", 
+    "reportCompletionDate"
 ];
 
 
@@ -274,7 +172,8 @@ initSheets();
  * ตรวจสอบ header และเขียนใหม่ถ้าไม่ตรง (ใช้ FIXED_HEADERS เพื่อให้ลำดับคงที่)
  */
 async function ensureHeaders(spreadsheetId, sheetName, newHeaders) {
-    // ขยายขอบเขตการอ่านจาก Z1 เป็น ZZ1 เพื่อรองรับคอลัมน์ GH (216 คอลัมน์)
+    // ขยายขอบเขตการอ่านให้ครอบคลุมจำนวนคอลัมน์ใหม่ (ประมาณ 219 คอลัมน์)
+    // ใช้ช่วงที่กว้างมาก (A1:ZZ1) เพื่อครอบคลุมคอลัมน์ทั้งหมดโดยไม่ต้องนับ
     const range = `${sheetName}!A1:ZZ1`; 
 
     const response = await sheets.spreadsheets.values.get({
