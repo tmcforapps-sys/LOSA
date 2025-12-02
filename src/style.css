@@ -1,0 +1,353 @@
+body {
+    font-family: 'Noto Sans Thai', sans-serif;
+    /* เพิ่มขนาดฟอนต์ฐานเล็กน้อยสำหรับมือถือ */
+    font-size: 16px;
+    padding: 20px; /* เพิ่ม Padding ทั่วไปสำหรับ Desktop/Tablet */
+}
+.required-asterisk::after {
+    content: " *";
+    color: #ef4444;
+}
+.checkbox-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px; /* เพิ่มระยะห่างสำหรับมือถือ */
+    font-size: 0.9rem; /* เพิ่มขนาดฟอนต์ */
+}
+
+/* === New: Form Container for Desktop/Tablet Centering and Max Width === */
+.form-container {
+    max-width: 960px; /* กำหนดความกว้างสูงสุดที่เหมาะสมสำหรับฟอร์มที่มีหลายส่วน */
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 1rem; /* เพิ่ม padding ภายในเล็กน้อย */
+}
+/* =================================================================== */
+
+/* === Input Display Fix for all devices (ensures text visibility) === */
+.sop-dropdown,
+.narrative-textarea,
+input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]) {
+    height: auto;
+    min-height: 44px; /* เพิ่มความสูงขั้นต่ำสำหรับพื้นที่สัมผัส */
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 8px; /* ปรับให้โค้งมนขึ้น */
+    box-sizing: border-box;
+    font-size: 1rem; /* เพิ่มขนาดฟอนต์ใน input */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease; /* เพิ่ม transition */
+}
+.narrative-textarea {
+    min-height: 80px; /* เพิ่มพื้นที่เริ่มต้นสำหรับพิมพ์ข้อความ */
+    font-size: 1rem;
+    padding: 8px 12px;
+}
+
+/* Modern Input Focus State */
+.sop-dropdown:focus,
+.narrative-textarea:focus,
+input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]):focus {
+    border-color: #3b82f6; /* Blue border on focus (Neutral, professional color) */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* Subtle blue focus ring */
+    outline: none;
+}
+/* End General Input Display Fix */
+
+/* TEM Background Colors */
+.bg-t { background-color: #d1fae5; }
+.bg-e { background-color: #fef9c3; }
+.bg-u { background-color: #fee2e2; }
+.bg-c { background-color: #dbeafe; }
+
+/* Row Highlighting based on SOP Met */
+.sop-fail-row {
+    background-color: #fee2e2 !important;
+    border: 1px solid #f87171;
+}
+.sop-pass-row {
+    background-color: #d1fae5 !important;
+    border: 1px solid #6ee7b7;
+}
+
+#network-status-banner {
+    padding: 12px; /* เพิ่ม Padding */
+    text-align: center;
+    font-weight: bold;
+    color: white;
+    transition: background-color 0.3s ease;
+    font-size: 1rem;
+}
+.status-online { background-color: #16a34a; }
+.status-offline { background-color: #71717a; }
+
+.checklist-card {
+    border: 1px solid #e5e7eb;
+    transition: box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    padding: 16px; /* เพิ่ม Padding ภายใน Card */
+    /* เพิ่มเงาที่ดูทันสมัย */
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03); 
+}
+.checklist-item-group {
+    background-color: #e5e7eb;
+    font-weight: bold;
+    font-size: 1rem; /* ปรับขนาดฟอนต์ */
+    padding: 10px 16px;
+    border-radius: 8px;
+    margin-top: 24px;
+    margin-bottom: 12px;
+}
+/* === Multi-step Form Styles === */
+
+/* ซ่อนทุกหน้าของฟอร์มไว้ก่อนเป็นค่าเริ่มต้น */
+.form-step {
+    display: none;
+    animation: fadeIn 0.5s;
+}
+
+/* ทำให้หน้าแรกแสดงผล */
+.form-step.active {
+    display: block;
+}
+
+/* สไตล์สำหรับแถบเลือกหน้า (Stepper) */
+#form-stepper {
+    display: flex;
+    justify-content: space-around;
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 1.5rem; /* ลด Margin เล็กน้อย */
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1rem;
+    flex-wrap: wrap; /* **สำคัญสำหรับมือถือ: อนุญาตให้ Steps ขึ้นบรรทัดใหม่** */
+}
+
+.step {
+    text-align: center;
+    cursor: pointer;
+    padding: 10px 15px;
+    color: #6b7280;
+    font-weight: bold;
+    border-bottom: 4px solid transparent;
+    transition: all 0.3s ease;
+    flex: 1 1 auto; /* ให้แต่ละ Step ขยายตามพื้นที่ที่มี */
+    min-width: 100px; /* กำหนดความกว้างขั้นต่ำ */
+    font-size: 1rem; /* ปรับขนาดฟอนต์บน Desktop/Tablet */
+}
+
+.step:hover {
+    color: #111827;
+}
+
+/* สไตล์สำหรับหน้าที่กำลังเลือกอยู่ */
+.step.active {
+    color: #dc2626; /* Red color */
+    border-bottom-color: #dc2626;
+}
+
+/* สไตล์สำหรับปุ่ม Navigation */
+#form-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    gap: 1rem; /* เพิ่มระยะห่างระหว่างปุ่ม */
+}
+
+/* Modern Button Styling for Navigation */
+#form-navigation button {
+    background-color: #f9fafb; /* Light background */
+    color: #1f2937; /* Dark text */
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* Subtle shadow */
+}
+
+#form-navigation button:hover {
+    background-color: #e5e7eb;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+#form-navigation button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* === Network Status Banner Styles === */
+#network-status-banner {
+    transition: background-color 0.3s ease;
+}
+.status-online { 
+    background-color: #16a34a; /* สีเขียว */
+}
+.status-offline { 
+    background-color: #71717a; /* สีเทา */
+}
+/* === Styles for Hiding/Showing TEM Details === */
+
+/* ซ่อนกลุ่ม Checkbox และ Narrative ไว้เป็นค่าเริ่มต้น */
+.tem-details {
+    display: none;
+    animation: fadeIn 0.4s; /* เพิ่ม animation เล็กน้อย */
+}
+
+/* คลาสสำหรับสั่งให้แสดงผล */
+.tem-details.visible {
+    display: block;
+}
+/* === Styles for SOP Radio Buttons (Segmented Control) === */
+.sop-radio-group {
+    display: flex;
+    gap: 0; /* ลบช่องว่างระหว่างปุ่ม */
+    border-radius: 8px; /* ปรับให้โค้งมนขึ้น */
+    overflow: hidden;
+    border: 1px solid #d1d5db; /* gray-300 */
+    width: 100%; /* ให้เต็มความกว้าง */
+}
+
+.sop-radio-group label {
+    flex-grow: 1;
+    text-align: center;
+    padding: 10px 10px; /* เพิ่ม Padding สำหรับ touch target */
+    cursor: pointer;
+    background-color: #f9fafb; /* gray-50 */
+    color: #4b5563; /* gray-600 */
+    font-weight: bold;
+    font-size: 0.95rem; /* เพิ่มขนาดฟอนต์ */
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease; /* เพิ่ม transition */
+    min-width: 0; /* แก้ไขปัญหา Flexbox ในบางเบราว์เซอร์ */
+}
+
+/* Hide the actual radio button */
+.sop-radio-group input[type="radio"] {
+    display: none;
+}
+
+/* Style for the selected label */
+.sop-radio-group input[type="radio"]:checked + label {
+    color: white;
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.1); /* Subtle inset shadow for depth */
+}
+
+/* Specific colors for each option */
+.sop-radio-group input[name$="_SOP"][value="Y"]:checked + label {
+    background-color: #16a34a; /* green-600 */
+}
+.sop-radio-group input[name$="_SOP"][value="N"]:checked + label {
+    background-color: #dc2626; /* red-600 */
+}
+.sop-radio-group input[name$="_SOP"][value="NA"]:checked + label {
+    background-color: #6b7280; /* gray-500 */
+}
+/* === Styles for Page Completion Checkbox === */
+.completion-checkbox-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 1.5rem; /* ลด Margin */
+    padding-top: 1rem;
+    border-top: 1px dashed #e5e7eb; /* gray-200 */
+}
+
+.completion-checkbox-container label {
+    font-weight: bold;
+    color: #4b5563; /* gray-600 */
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.completion-checkbox-container input {
+    width: 1.5rem; /* เพิ่มขนาด Checkbox */
+    height: 1.5rem;
+    margin-left: 0.75rem;
+    cursor: pointer;
+}
+
+/* === Styles for Stepper Completion Mark === */
+.step.completed .step-title::after {
+    content: ' ✔'; /* Add a checkmark */
+    color: #16a34a; /* green-600 */
+    font-size: 1rem;
+    margin-left: 4px;
+}
+
+/* ======================================= */
+/* === Responsive Media Query (Mobile & Tablet) === */
+/* ======================================= */
+@media (max-width: 768px) {
+    /* 1. Global Layout Adjustments */
+    body {
+        padding: 10px; /* ลด Padding บนมือถือ */
+    }
+
+    /* **สำคัญ: บนมือถือให้ Form Container ขยายเต็มที่** */
+    .form-container {
+        max-width: none;
+        padding: 0;
+    }
+
+    /* 2. Stepper Adjustments for Narrow Screens */
+    /* ทำให้ Step แสดงผล 2 คอลัมน์ต่อแถวบนมือถือ */
+    #form-stepper {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    .step {
+        width: 45%; /* ให้เหลือพื้นที่ gap */
+        flex: 0 0 45%; /* กำหนดขนาดให้ชัดเจนขึ้น */
+        margin: 5px 2.5%; /* เพิ่ม Margin ซ้ายขวา */
+        border-bottom: none;
+        padding: 10px 5px;
+        border: 2px solid #e5e7eb; /* เพิ่มขอบรอบแทนขอบล่าง */
+        border-radius: 8px;
+        color: #4b5563;
+        font-size: 0.9rem;
+    }
+
+    .step.active {
+        border-color: #dc2626;
+        background-color: #fef2f2; /* Red-50 */
+    }
+
+    .step:hover {
+        background-color: #f3f4f6;
+    }
+    
+    /* 3. Navigation Button Adjustments */
+    #form-navigation {
+        /* บีบปุ่มให้เต็มความกว้างและจัดเรียงเป็นแนวตั้งบนหน้าจอเล็กมากหากจำเป็น */
+        flex-direction: column; 
+        gap: 12px;
+    }
+
+    #form-navigation button {
+        width: 100%; /* ปุ่มเต็มความกว้าง */
+        padding: 12px 0;
+    }
+
+    /* 4. Input and Textarea Fixes */
+    /* ปรับขนาดฟอนต์ใน input/textarea ให้เหมาะสมกับมือถือ */
+    .sop-dropdown,
+    .narrative-textarea,
+    input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]) {
+        font-size: 16px; /* 1rem (แนะนำสำหรับมือถือ เพื่อป้องกันการซูม) */
+        padding: 10px;
+    }
+
+    /* 5. SOP Group Adjustments (If many options were added) */
+    /* ถ้ามีตัวเลือก SOP มากกว่า 3 ตัว (Y/N/NA) อาจต้องพิจารณาให้ wrap หรือใช้เมนูเลือก */
+    .sop-radio-group label {
+        font-size: 0.9rem;
+        padding: 10px 5px;
+    }
+}

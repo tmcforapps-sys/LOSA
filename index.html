@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cabin Crew LOSA Checklist</title>
+    <meta name="theme-color" content="#DC2626"/>
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-100 p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-2xl" id="capture-content">
+        <div id="network-status-banner" class="rounded-t-xl text-white text-center font-bold p-2 mb-4 -mx-6 -mt-6 sm:-mx-10 sm:-mt-10"></div>
+        <div class="p-6 sm:p-10 pt-0 sm:pt-0">
+            <h1 class="text-3xl font-extrabold text-red-600 mb-6 text-center">Cabin Crew LOSA Checklist</h1>
+            <div id="form-stepper" class="w-full mb-8 overflow-x-auto pb-4"></div>
+
+            <form id="checklistForm">
+                <div class="form-step">
+                    <section class="mb-8">
+                        <h2 class="text-xl font-bold text-red-800 mb-4 step-title">I. Flight & Audit Details</h2>
+                        <div class="p-6 bg-red-50 border-l-4 border-red-500 rounded-lg shadow-inner">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                <div><label for="observationDate" class="block text-gray-700 font-bold mb-1 required-asterisk">Date of Observation:</label><input type="date" id="observationDate" name="observationDate" class="w-full px-3 py-2 border rounded-lg" required></div>
+                                <div><label for="flightNumberNew" class="block text-gray-700 font-bold mb-1 required-asterisk">Flight Number:</label><input type="text" id="flightNumberNew" name="flightNumberNew" class="w-full px-3 py-2 border rounded-lg" placeholder="e.g., FD3001" required></div>
+                                <div><label for="routeFrom" class="block text-gray-700 font-bold mb-1">Route (From):</label><input type="text" id="routeFrom" name="routeFrom" class="w-full px-3 py-2 border rounded-lg" placeholder="e.g., BKK"></div>
+                                <div><label for="routeTo" class="block text-gray-700 font-bold mb-1">Route (To):</label><input type="text" id="routeTo" name="routeTo" class="w-full px-3 py-2 border rounded-lg" placeholder="e.g., CNX"></div>
+                                <div><label for="aircraftType" class="block text-gray-700 font-bold mb-1">Aircraft Type:</label><input type="text" id="aircraftType" name="aircraftType" class="w-full px-3 py-2 border rounded-lg" placeholder="e.g., A320"></div>
+                                <div><label for="observerId" class="block text-gray-700 font-bold mb-1">Observer ID:</label><input type="text" id="observerId" name="observerId" class="w-full px-3 py-2 border rounded-lg" placeholder="e.g., LOSA001"></div>
+                                <div><label for="crewObserved" class="block text-gray-700 font-bold mb-1">No. of Cabin Crew Observed:</label><input type="number" id="crewObserved" name="crewObserved" class="w-full px-3 py-2 border rounded-lg" placeholder="e.g., 4"></div>
+                                <div><label for="loadFactor" class="block text-gray-700 font-bold mb-1">Load Factor (%):</label><input type="text" id="loadFactor" name="loadFactor" class="w-full px-3 py-2 border rounded-lg" placeholder="e.g., 85%"></div>
+                                <div class="sm:col-span-2"><label for="inspectorName" class="block text-gray-700 font-bold mb-1 required-asterisk">Inspector Name:</label><select id="inspectorName" name="inspectorName" class="w-full px-3 py-2 border rounded-lg bg-white" required><option value="">-- Select Inspector --</option><option value="Naparin Boonchuaylue">Naparin Boonchuaylue</option><option value="Khathawut Benjachinsuwan">Khathawut Benjachinsuwan</option><option value="Parichat Srithongkul">Parichat Srithongkul</option><option value="Twankorn Chen">Twankorn Chen</option><option value="Phinlaphat Aphinyaupatham">Phinlaphat Aphinyaupatham</option><option value="Alisara Usavagovitwong">Alisara Usavagovitwong</option><option value="Janpen Vorawanitcha">Janpen Vorawanitcha</option><option value="Adisorn Usmanbaha">Adisorn Usmanbaha</option><option value="Chotika Totrakool">Chotika Totrakool</option><option value="Kittitat Chanta-amornlertkul">Kittitat Chanta-amornlertkul</option><option value="Busabong Promkhuntod">Busabong Promkhuntod</option></select></div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="form-step"><h2 class="text-lg font-bold text-gray-800 mb-4 step-title">A. Pre-Flight</h2><div id="checklist-container-A"></div><div class="completion-checkbox-container"></div></div>
+                <div class="form-step"><h2 class="text-lg font-bold text-gray-800 mb-4 step-title">B. Boarding</h2><div id="checklist-container-B"></div><div class="completion-checkbox-container"></div></div>
+                <div class="form-step"><h2 class="text-lg font-bold text-gray-800 mb-4 step-title">C. Taxi-Out</h2><div id="checklist-container-C"></div><div class="completion-checkbox-container"></div></div>
+                <div class="form-step"><h2 class="text-lg font-bold text-gray-800 mb-4 step-title">D. Cruise</h2><div id="checklist-container-D"></div><div class="completion-checkbox-container"></div></div>
+                <div class="form-step"><h2 class="text-lg font-bold text-gray-800 mb-4 step-title">E. Descent</h2><div id="checklist-container-E"></div><div class="completion-checkbox-container"></div></div>
+                <div class="form-step"><h2 class="text-lg font-bold text-gray-800 mb-4 step-title">F. Taxi-In</h2><div id="checklist-container-F"></div><div class="completion-checkbox-container"></div></div>
+                <div class="form-step"><h2 class="text-lg font-bold text-gray-800 mb-4 step-title">G. Post-Flight</h2><div id="checklist-container-G"></div><div class="completion-checkbox-container"></div></div>
+                <div class="form-step">
+                     <section class="mb-8">
+                        <h2 class="text-lg font-bold text-yellow-800 mb-4 step-title">IV. Overall Summary</h2>
+                        <div class="p-6 bg-yellow-50 border-l-4 border-yellow-500 rounded-lg shadow-inner">
+                            <div class="mb-4 text-sm"><label for="sigThreat" class="block text-gray-700 font-bold mb-1">Most significant Threat(s):</label><textarea id="sigThreat" name="sigThreat" rows="2" class="w-full px-3 py-2 border rounded-lg"></textarea></div>
+                            <div class="mb-4 text-sm"><label for="sigError" class="block text-gray-700 font-bold mb-1">Most significant Error(s):</label><textarea id="sigError" name="sigError" rows="2" class="w-full px-3 py-2 border rounded-lg"></textarea></div>
+                            <div class="mb-4 text-sm"><label for="effectiveCm" class="block text-gray-700 font-bold mb-1">Most effective Countermeasure(s):</label><textarea id="effectiveCm" name="effectiveCm" rows="2" class="w-full px-3 py-2 border rounded-lg"></textarea></div>
+                            <div class="mb-4 text-sm"><label for="generalComments" class="block text-gray-700 font-bold mb-1">General comments:</label><textarea id="generalComments" name="generalComments" rows="3" class="w-full px-3 py-2 border rounded-lg"></textarea></div>
+                            <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                <div><label for="areasOfStrength" class="block text-gray-700 font-bold mb-1">Areas of strength:</label><textarea id="areasOfStrength" name="areasOfStrength" rows="2" class="w-full px-3 py-2 border rounded-lg"></textarea></div>
+                                <div><label for="opportunitiesForImprovement" class="block text-gray-700 font-bold mb-1">Opportunities for improvement:</label><textarea id="opportunitiesForImprovement" name="opportunitiesForImprovement" rows="2" class="w-full px-3 py-2 border rounded-lg"></textarea></div>
+                            </div>
+                            <div class="mb-4 text-sm"><label for="observerSignature" class="block text-gray-700 font-bold mb-1">Observer's Signature:</label><input type="text" id="observerSignature" name="observerSignature" class="w-full px-3 py-2 border rounded-lg"></div>
+                            <div class="mb-4 text-sm"><label for="reportCompletionDate" class="block text-gray-700 font-bold mb-1">Date of Report Completion:</label><input type="date" id="reportCompletionDate" name="reportCompletionDate" class="w-full px-3 py-2 border rounded-lg"></div>
+                        </div>
+                    </section>
+                     <div class="completion-checkbox-container"></div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mt-8 border-t pt-6">
+                    <button type="button" id="saveLocalButton" class="w-full bg-orange-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-orange-600 shadow-xl">💾 Save for Later</button>
+                    <button type="button" id="exportCsvButton" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 shadow-xl">📊 Export to CSV</button>
+                </div>
+
+                <div id="form-navigation" class="mt-6">
+                    <button type="button" id="prevBtn" class="bg-gray-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-600 shadow-lg">⬅️ Previous</button>
+                    <button type="button" id="nextBtn" class="bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 shadow-lg">Next ➡️</button>
+                    <button type="submit" id="submitBtn" class="hidden bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 shadow-lg">🚀 Submit Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script type="module" src="./src/main.js"></script>
+</body>
+</html>
