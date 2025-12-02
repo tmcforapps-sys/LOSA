@@ -31,7 +31,7 @@ const FIXED_HEADERS = [
     "submissionTimestamp",      // 2. (B)
     "observationDate",          // 3. (C)
     "flightNumber",             // 4. (D)
-    "NewinspectorName",         // 5. (E)
+    "inspectorName",         // 5. (E)
     "routeFrom",                // 6. (F)
     "routeTo",                  // 7. (G)
     "aircraftType",             // 8. (H)
@@ -254,3 +254,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`✅ Server running at http://localhost:${PORT}`);
 });
+
