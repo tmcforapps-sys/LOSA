@@ -30,7 +30,7 @@ const FIXED_HEADERS = [
     // Core Report Info
     "submissionTimestamp",      // 2. (B)
     "observationDate",          // 3. (C)
-    "flightNumber",             // 4. (D)
+    "flightNumber",             // 4. (D) 
     "inspectorName",         // 5. (E)
     "routeFrom",                // 6. (F)
     "routeTo",                  // 7. (G)
@@ -254,4 +254,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`✅ Server running at http://localhost:${PORT}`);
 });
-
