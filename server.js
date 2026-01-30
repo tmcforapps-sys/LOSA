@@ -112,6 +112,7 @@ const FIXED_HEADERS = [
     "E3_SOP", "E3_T", "E3_E", "E3_U", "E3_C", "E3_Narrative",
     // Section E4: Contingency Planning (1 item * 6 fields = 6)
     "E41_SOP", "E41_T", "E41_E", "E41_U", "E41_C", "E41_Narrative",
+    "E42_SOP", "E42_T", "E42_E", "E42_U", "E42_C", "E42_Narrative",
     // Section F1: Callouts/Checklist (4 items * 6 fields = 24)
     "F11_SOP", "F11_T", "F11_E", "F11_U", "F11_C", "F11_Narrative",
     "F12_SOP", "F12_T", "F12_E", "F12_U", "F12_C", "F12_Narrative",
@@ -254,4 +255,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`✅ Server running at http://localhost:${PORT}`);
 });
+
 
