@@ -114,24 +114,23 @@ async function initSheets() {
     try {
         const client = await auth.getClient();
         sheets = google.sheets({ version: "v4", auth: client });
-        console.log("✅ Google Sheets client initialized.");
-        
-        // ตรวจสอบและสร้าง Headers ทันทีที่รัน Server (ไม่ต้องรอ Save ข้อมูล)
+        console.log("✅ Google Sheets initialized.");
+        // สร้าง Header แถวแรกทันทีที่รันโปรแกรม ถ้ายังไม่มีหรือลำดับไม่ตรง
         await ensureHeaders(SHEET_ID, SHEET_LOSA_DATA, FIXED_HEADERS);
     } catch (e) {
-        console.error("ERROR: Failed to initialize Google Sheets client.", e);
+        console.error("ERROR: Failed to initialize Google Sheets.", e);
     }
 }
 initSheets();
 
 async function ensureHeaders(spreadsheetId, sheetName, newHeaders) {
     try {
-        const range = `${sheetName}!A1:ZZ1`;
-        const response = await sheets.spreadsheets.values.get({ spreadsheetId, range });
+        const response = await sheets.spreadsheets.values.get({
+            spreadsheetId,
+            range: `${sheetName}!A1:ZZ1`,
+        });
         const existing = response.data.values ? response.data.values[0] : [];
-
         if (JSON.stringify(existing) !== JSON.stringify(newHeaders)) {
-            console.log(`Updating headers in ${sheetName} to ensure correct order.`);
             await sheets.spreadsheets.values.update({
                 spreadsheetId,
                 range: `${sheetName}!A1`,
@@ -140,7 +139,7 @@ async function ensureHeaders(spreadsheetId, sheetName, newHeaders) {
             });
         }
     } catch (err) {
-        console.warn("Notice: ensureHeaders failed (maybe sheet is empty).", err.message);
+        console.warn("Notice: Header check failed (likely new sheet).", err.message);
     }
 }
 
@@ -148,34 +147,34 @@ async function ensureHeaders(spreadsheetId, sheetName, newHeaders) {
 app.post("/api/losa_save", async (req, res) => {
     const rawData = req.body;
 
-    // แก้ไข: เปลี่ยนจาก ISOString เป็น format ที่ Sheets เข้าใจว่าเป็น Date (YYYY-MM-DD HH:mm:ss)
+    // --- แก้ไข FORMAT วันที่ให้ Google Sheets อ่านออก ---
     const now = new Date();
-    rawData.serverTimestamp = now.toLocaleString("sv-SE", { timeZone: "Asia/Bangkok" });
+    // 'sv-SE' จะได้ Format YYYY-MM-DD HH:mm:ss ซึ่ง Sheets ยอมรับว่าเป็น Date ทันที
+    const thaiTimeString = now.toLocaleString("sv-SE", { timeZone: "Asia/Bangkok" });
+    rawData.serverTimestamp = thaiTimeString;
 
     try {
         if (!SHEET_ID || !process.env.GOOGLE_SERVICE_ACCOUNT) {
-            throw new Error("Missing environment variables.");
+            throw new Error("Environment variables SHEET_ID or GOOGLE_SERVICE_ACCOUNT are missing.");
         }
 
-        // จัดเรียงข้อมูลตาม Headers
         const orderedValues = FIXED_HEADERS.map(header => {
             const val = rawData[header];
             return (val !== undefined && val !== null) ? String(val) : "";
         });
 
-        // บันทึกข้อมูลแบบ Append (ต่อท้ายแถวสุดท้าย)
+        // บันทึกข้อมูลแบบต่อท้าย (Append)
         await sheets.spreadsheets.values.append({
             spreadsheetId: SHEET_ID,
-            // ระบุ A1 เพื่อให้ระบบค้นหาแถวว่างถัดไปเองโดยอัตโนมัติ
-            range: `${SHEET_LOSA_DATA}!A1`, 
-            valueInputOption: "USER_ENTERED", // สำคัญ: เพื่อให้ Sheets แปลง String วันที่ เป็น Date Type
+            range: `${SHEET_LOSA_DATA}!A1`, // ใส่ A1 เพื่อให้ API หาแถวว่างแถวแรกเอง
+            valueInputOption: "USER_ENTERED", // สำคัญมาก: เพื่อให้ Sheets เปลี่ยน String วันที่เป็น Date Type
             insertDataOption: "INSERT_ROWS",
             requestBody: {
                 values: [orderedValues],
             },
         });
 
-        res.json({ success: true, message: "Data appended successfully." });
+        res.json({ success: true, message: "Data appended with proper date format." });
     } catch (err) {
         console.error("SAVE ERROR:", err);
         res.status(500).json({ error: err.message });
