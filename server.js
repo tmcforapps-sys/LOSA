@@ -169,34 +169,27 @@ async function initSheets() {
 }
 initSheets();
 
-/**
- * ตรวจสอบ header และเขียนใหม่ถ้าไม่ตรง (ใช้ FIXED_HEADERS เพื่อให้ลำดับคงที่)
- */
 async function ensureHeaders(spreadsheetId, sheetName, newHeaders) {
-    // ขยายขอบเขตการอ่านให้ครอบคลุมจำนวนคอลัมน์ใหม่ (ประมาณ 219 คอลัมน์)
-    // ใช้ช่วงที่กว้างมาก (A1:ZZ1) เพื่อครอบคลุมคอลัมน์ทั้งหมดโดยไม่ต้องนับ
-    const range = `${sheetName}!A1:ZZ1`; 
-
-    const response = await sheets.spreadsheets.values.get({
-        spreadsheetId,
-        range,
-    });
-
-    // ถ้าไม่มีค่าอยู่เลย หรือค่าที่อ่านมาไม่ตรงกับ FIXED_HEADERS ให้เขียนใหม่
-    const existing = response.data.values ? response.data.values[0] : [];
-
-    // เปรียบเทียบ header ทั้งหมด (ใช้ JSON.stringify เพื่อเทียบ Array)
-    if (JSON.stringify(existing) !== JSON.stringify(newHeaders)) {
-        console.log(`Updating headers in ${sheetName} to ensure correct order.`);
-
-        await sheets.spreadsheets.values.update({
+    try {
+        const range = `${sheetName}!A1:ZZ1`; 
+        const response = await sheets.spreadsheets.values.get({
             spreadsheetId,
-            // อัปเดตที่ A1 เพื่อให้เขียนทับ Headers เดิม
-            range: `${sheetName}!A1`, 
-            valueInputOption: "RAW",
-            // ใช้ newHeaders ที่มาจาก FIXED_HEADERS เสมอ
-            requestBody: { values: [newHeaders] }, 
+            range,
         });
+
+        const existing = response.data.values ? response.data.values[0] : [];
+
+        if (JSON.stringify(existing) !== JSON.stringify(newHeaders)) {
+            console.log(`Updating headers in ${sheetName}...`);
+            await sheets.spreadsheets.values.update({
+                spreadsheetId,
+                range: `${sheetName}!A1`, 
+                valueInputOption: "RAW",
+                requestBody: { values: [newHeaders] }, 
+            });
+        }
+    } catch (e) {
+        console.error("Header Check Error:", e.message);
     }
 }
 
@@ -210,34 +203,31 @@ app.post("/api/losa_save", async (req, res) => {
             throw new Error("Missing environment variables.");
         }
         
-        // 1. ตรวจสอบ Headers ก่อน (ฟังก์ชันเดิมของคุณ)
-        await ensureHeaders(SHEET_ID, SHEET_LOSA_DATA, FIXED_HEADERS);
+        // --- จุดที่เปลี่ยน --- 
+        // เราไม่จำเป็นต้องเรียก ensureHeaders ทุกครั้งที่ Save 
+        // แต่ถ้ายังอยากค้างไว้เพื่อความชัวร์ ให้มั่นใจว่า range ใน append ถูกต้อง
         
-        // 2. เตรียมข้อมูลตามลำดับ FIXED_HEADERS
         const orderedValues = FIXED_HEADERS.map(header => {
-            return rawData[header] !== undefined && rawData[header] !== null 
+            return (rawData[header] !== undefined && rawData[header] !== null)
                    ? String(rawData[header]) 
                    : "";
         });
 
-        // 3. Append ข้อมูล (แก้ไขตรงนี้)
+        // 3. Append ข้อมูล (ตรวจสอบ range ตรงนี้)
         await sheets.spreadsheets.values.append({
             spreadsheetId: SHEET_ID,
-            // ระบุ A1 เพื่อให้ระบบรู้จุดเริ่มของ Table
+            // ระบุแค่ชื่อชีท หรือ A1 เพื่อให้ API ค้นหาแถวสุดท้ายเอง (Next available row)
             range: `${SHEET_LOSA_DATA}!A1`, 
             valueInputOption: "USER_ENTERED",
-            // เพิ่ม Option นี้เพื่อให้มั่นใจว่าจะเพิ่มแถวใหม่ (Append)
-            insertDataOption: "INSERT_ROWS", 
-            requestBody: { 
-                values: [orderedValues] 
-            },
+            insertDataOption: "INSERT_ROWS", // เพิ่ม Option นี้เพื่อให้มั่นใจว่าเป็นการแทรกแถวใหม่
+            requestBody: { values: [orderedValues] },
         });
 
-        res.json({ success: true, message: "Saved to sheet successfully." });
+        res.json({ success: true, message: "Append data successfully." });
 
     } catch (err) {
         console.error("SAVE ERROR:", err); 
-        res.status(500).json({ error: "Failed to save", details: err.message });
+        res.status(500).json({ error: err.message });
     }
 });
 
@@ -251,6 +241,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`✅ Server running at http://localhost:${PORT}`);
 });
+
 
 
 
