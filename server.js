@@ -202,46 +202,42 @@ async function ensureHeaders(spreadsheetId, sheetName, newHeaders) {
 
 // ---------------- API Save ----------------
 app.post("/api/losa_save", async (req, res) => {
-    // rawData คือข้อมูลที่มาจาก Frontend
     const rawData = req.body;
-    // เพิ่ม Server Timestamp เสมอ
     rawData.serverTimestamp = new Date().toISOString();
 
     try {
         if (!SHEET_ID || !process.env.GOOGLE_SERVICE_ACCOUNT) {
-            throw new Error("Missing environment variables (SHEET_ID or GOOGLE_SERVICE_ACCOUNT).");
+            throw new Error("Missing environment variables.");
         }
         
-        // 1. ตรวจสอบและแก้ไข Headers โดยใช้ลำดับที่กำหนดตายตัว
-        // จะมีการเขียน Header แถวแรกใหม่ หากลำดับไม่ตรงกับ FIXED_HEADERS
+        // 1. ตรวจสอบ Headers ก่อน (ฟังก์ชันเดิมของคุณ)
         await ensureHeaders(SHEET_ID, SHEET_LOSA_DATA, FIXED_HEADERS);
         
-        // 2. สร้าง Array ของ Values ตามลำดับ Column ที่กำหนดไว้ใน FIXED_HEADERS เท่านั้น
+        // 2. เตรียมข้อมูลตามลำดับ FIXED_HEADERS
         const orderedValues = FIXED_HEADERS.map(header => {
-            // ใช้ค่าจาก rawData ถ้ามี ถ้าไม่มีให้ใช้สตริงว่าง ("")
-            // ใช้ String() เพื่อให้แน่ใจว่าเป็นค่าที่ Sheets API รับได้ (ป้องกัน null/undefined)
             return rawData[header] !== undefined && rawData[header] !== null 
                    ? String(rawData[header]) 
                    : "";
         });
 
-        // 3. Append ข้อมูล
+        // 3. Append ข้อมูล (แก้ไขตรงนี้)
         await sheets.spreadsheets.values.append({
             spreadsheetId: SHEET_ID,
-            range: SHEET_LOSA_DATA,
+            // ระบุ A1 เพื่อให้ระบบรู้จุดเริ่มของ Table
+            range: `${SHEET_LOSA_DATA}!A1`, 
             valueInputOption: "USER_ENTERED",
-            requestBody: { values: [orderedValues] }, // ใช้ค่าที่ถูกเรียงลำดับแล้ว
+            // เพิ่ม Option นี้เพื่อให้มั่นใจว่าจะเพิ่มแถวใหม่ (Append)
+            insertDataOption: "INSERT_ROWS", 
+            requestBody: { 
+                values: [orderedValues] 
+            },
         });
 
         res.json({ success: true, message: "Saved to sheet successfully." });
 
     } catch (err) {
-        // หากเกิดข้อผิดพลาดในการบันทึก
         console.error("SAVE ERROR:", err); 
-        res.status(500).json({
-            error: "Failed to save data to Google Sheets.",
-            details: err.message,
-        });
+        res.status(500).json({ error: "Failed to save", details: err.message });
     }
 });
 
@@ -255,5 +251,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`✅ Server running at http://localhost:${PORT}`);
 });
+
 
 
