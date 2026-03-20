@@ -18,87 +18,156 @@ app.use(express.static(path.join(__dirname, "dist")));
 const SHEET_ID = process.env.SHEET_ID;
 const SHEET_LOSA_DATA = "Sheet1";
 
-// ---------------- FIXED SCHEMA DEFINITION ----------------
+// ---------------- FULL FIXED SCHEMA (WITH OTHERS IN EVERY SECTION) ----------------
 const FIXED_HEADERS = [
-    "serverTimestamp", "submissionTimestamp", "observationDate", "flightNumberNew",
-    "inspectorName", "routeFrom", "routeTo", "aircraftType", "observerId", "crewObserved", "loadFactor",
-    "A11_SOP", "A11_T", "A11_E", "A11_U", "A11_C", "A11_Narrative", 
-    "A12_SOP", "A12_T", "A12_E", "A12_U", "A12_C", "A12_Narrative", 
-    "A13_SOP", "A13_T", "A13_E", "A13_U", "A13_C", "A13_Narrative", 
-    "A14_SOP", "A14_T", "A14_E", "A14_U", "A14_C", "A14_Narrative", 
-    "A15_SOP", "A15_T", "A15_E", "A15_U", "A15_C", "A15_Narrative", 
-    "A16_SOP", "A16_T", "A16_E", "A16_U", "A16_C", "A16_Narrative", 
+    // 1-11: Core Info
+    "serverTimestamp", "submissionTimestamp", "observationDate", "flightNumberNew", 
+    "inspectorName", "routeFrom", "routeTo", "aircraftType", "observerId", 
+    "crewObserved", "loadFactor",
+
+    // Section A1: Crew Briefing (A11 - A17 + A18_Others)
+    "A11_SOP", "A11_T", "A11_E", "A11_U", "A11_C", "A11_Narrative",
+    "A12_SOP", "A12_T", "A12_E", "A12_U", "A12_C", "A12_Narrative",
+    "A13_SOP", "A13_T", "A13_E", "A13_U", "A13_C", "A13_Narrative",
+    "A14_SOP", "A14_T", "A14_E", "A14_U", "A14_C", "A14_Narrative",
+    "A15_SOP", "A15_T", "A15_E", "A15_U", "A15_C", "A15_Narrative",
+    "A16_SOP", "A16_T", "A16_E", "A16_U", "A16_C", "A16_Narrative",
     "A17_SOP", "A17_T", "A17_E", "A17_U", "A17_C", "A17_Narrative",
+    "A18_SOP", "A18_T", "A18_E", "A18_U", "A18_C", "A18_Narrative", // Others
+
+    // Section A2: Cabin Crew Briefing (A21 - A25 + A26_Others)
     "A21_SOP", "A21_T", "A21_E", "A21_U", "A21_C", "A21_Narrative",
     "A22_SOP", "A22_T", "A22_E", "A22_U", "A22_C", "A22_Narrative",
     "A23_SOP", "A23_T", "A23_E", "A23_U", "A23_C", "A23_Narrative",
     "A24_SOP", "A24_T", "A24_E", "A24_U", "A24_C", "A24_Narrative",
     "A25_SOP", "A25_T", "A25_E", "A25_U", "A25_C", "A25_Narrative",
+    "A26_SOP", "A26_T", "A26_E", "A26_U", "A26_C", "A26_Narrative", // Others
+
+    // Section A3: Pre-Flight Cabin Checks (A31 - A36 + A37_Others)
     "A31_SOP", "A31_T", "A31_E", "A31_U", "A31_C", "A31_Narrative",
     "A32_SOP", "A32_T", "A32_E", "A32_U", "A32_C", "A32_Narrative",
     "A33_SOP", "A33_T", "A33_E", "A33_U", "A33_C", "A33_Narrative",
     "A34_SOP", "A34_T", "A34_E", "A34_U", "A34_C", "A34_Narrative",
     "A35_SOP", "A35_T", "A35_E", "A35_U", "A35_C", "A35_Narrative",
     "A36_SOP", "A36_T", "A36_E", "A36_U", "A36_C", "A36_Narrative",
+    "A37_SOP", "A37_T", "A37_E", "A37_U", "A37_C", "A37_Narrative", // Others
+
+    // Section B1: Passenger Greeting (B11 - B15 + B16_Others)
     "B11_SOP", "B11_T", "B11_E", "B11_U", "B11_C", "B11_Narrative",
     "B12_SOP", "B12_T", "B12_E", "B12_U", "B12_C", "B12_Narrative",
     "B13_SOP", "B13_T", "B13_E", "B13_U", "B13_C", "B13_Narrative",
     "B14_SOP", "B14_T", "B14_E", "B14_U", "B14_C", "B14_Narrative",
     "B15_SOP", "B15_T", "B15_E", "B15_U", "B15_C", "B15_Narrative",
+    "B16_SOP", "B16_T", "B16_E", "B16_U", "B16_C", "B16_Narrative", // Others
+
+    // Section B2: Pre-Departure Secure (B21 - B26 + B27_Others)
     "B21_SOP", "B21_T", "B21_E", "B21_U", "B21_C", "B21_Narrative",
     "B22_SOP", "B22_T", "B22_E", "B22_U", "B22_C", "B22_Narrative",
     "B23_SOP", "B23_T", "B23_E", "B23_U", "B23_C", "B23_Narrative",
     "B24_SOP", "B24_T", "B24_E", "B24_U", "B24_C", "B24_Narrative",
     "B25_SOP", "B25_T", "B25_E", "B25_U", "B25_C", "B25_Narrative",
     "B26_SOP", "B26_T", "B26_E", "B26_U", "B26_C", "B26_Narrative",
+    "B27_SOP", "B27_T", "B27_E", "B27_U", "B27_C", "B27_Narrative", // Others
+
+    // Section B3: Safety Demo (B31 - B32 + B33_Others)
     "B31_SOP", "B31_T", "B31_E", "B31_U", "B31_C", "B31_Narrative",
     "B32_SOP", "B32_T", "B32_E", "B32_U", "B32_C", "B32_Narrative",
+    "B33_SOP", "B33_T", "B33_E", "B33_U", "B33_C", "B33_Narrative", // Others
+
+    // Section C1: Final Cabin Checks (C11 - C14 + C15_Others)
     "C11_SOP", "C11_T", "C11_E", "C11_U", "C11_C", "C11_Narrative",
     "C12_SOP", "C12_T", "C12_E", "C12_U", "C12_C", "C12_Narrative",
     "C13_SOP", "C13_T", "C13_E", "C13_U", "C13_C", "C13_Narrative",
     "C14_SOP", "C14_T", "C14_E", "C14_U", "C14_C", "C14_Narrative",
+    "C15_SOP", "C15_T", "C15_E", "C15_U", "C15_C", "C15_Narrative", // Others
+
+    // Section C2: Response to Take-off (C21 - C23 + C24_Others)
     "C21_SOP", "C21_T", "C21_E", "C21_U", "C21_C", "C21_Narrative",
     "C22_SOP", "C22_T", "C22_E", "C22_U", "C22_C", "C22_Narrative",
     "C23_SOP", "C23_T", "C23_E", "C23_U", "C23_C", "C23_Narrative",
+    "C24_SOP", "C24_T", "C24_E", "C24_U", "C24_C", "C24_Narrative", // Others
+
+    // Section D1: Service Delivery (D11 - D12 + D13_Others)
     "D11_SOP", "D11_T", "D11_E", "D11_U", "D11_C", "D11_Narrative",
     "D12_SOP", "D12_T", "D12_E", "D12_U", "D12_C", "D12_Narrative",
+    "D13_SOP", "D13_T", "D13_E", "D13_U", "D13_C", "D13_Narrative", // Others
+
+    // Section D2: Cabin Surveillance (D21 - D24 + D25_Others)
     "D21_SOP", "D21_T", "D21_E", "D21_U", "D21_C", "D21_Narrative",
     "D22_SOP", "D22_T", "D22_E", "D22_U", "D22_C", "D22_Narrative",
     "D23_SOP", "D23_T", "D23_E", "D23_U", "D23_C", "D23_Narrative",
     "D24_SOP", "D24_T", "D24_E", "D24_U", "D24_C", "D24_Narrative",
+    "D25_SOP", "D25_T", "D25_E", "D25_U", "D25_C", "D25_Narrative", // Others
+
+    // Section D3: Passenger Handling (D31 - D33 + D34_Others)
     "D31_SOP", "D31_T", "D31_E", "D31_U", "D31_C", "D31_Narrative",
     "D32_SOP", "D32_T", "D32_E", "D32_U", "D32_C", "D32_Narrative",
     "D33_SOP", "D33_T", "D33_E", "D33_U", "D33_C", "D33_Narrative",
+    "D34_SOP", "D34_T", "D34_E", "D34_U", "D34_C", "D34_Narrative", // Others
+
+    // Section D4: Communication (D41 + D42_Others)
     "D41_SOP", "D41_T", "D41_E", "D41_U", "D41_C", "D41_Narrative",
+    "D42_SOP", "D42_T", "D42_E", "D42_U", "D42_C", "D42_Narrative", // Others
+
+    // Section D5: Turbulence Management (D51 - D52 + D53_Others)
     "D51_SOP", "D51_T", "D51_E", "D51_U", "D51_C", "D51_Narrative",
     "D52_SOP", "D52_T", "D52_E", "D52_U", "D52_C", "D52_Narrative",
+    "D53_SOP", "D53_T", "D53_E", "D53_U", "D53_C", "D53_Narrative", // Others
+
+    // Section E1: Pre-Landing Prep (E11 + E12_Others)
     "E11_SOP", "E11_T", "E11_E", "E11_U", "E11_C", "E11_Narrative",
+    "E12_SOP", "E12_T", "E12_E", "E12_U", "E12_C", "E12_Narrative", // Others
+
+    // Section E2: Final Cabin Checks Landing (E21 - E24 + E25_Others)
     "E21_SOP", "E21_T", "E21_E", "E21_U", "E21_C", "E21_Narrative",
     "E22_SOP", "E22_T", "E22_E", "E22_U", "E22_C", "E22_Narrative",
     "E23_SOP", "E23_T", "E23_E", "E23_U", "E23_C", "E23_Narrative",
     "E24_SOP", "E24_T", "E24_E", "E24_U", "E24_C", "E24_Narrative",
+    "E25_SOP", "E25_T", "E25_E", "E25_U", "E25_C", "E25_Narrative", // Others
+
+    // Section E3: Sterile Flight Deck (E3 เฉยๆ ไม่มี Group ย่อย แต่เพิ่มเพื่อความชัวร์)
     "E3_SOP", "E3_T", "E3_E", "E3_U", "E3_C", "E3_Narrative",
+
+    // Section E4: Response to Landing (E41 - E42 + E43_Others)
     "E41_SOP", "E41_T", "E41_E", "E41_U", "E41_C", "E41_Narrative",
     "E42_SOP", "E42_T", "E42_E", "E42_U", "E42_C", "E42_Narrative",
+    "E43_SOP", "E43_T", "E43_E", "E43_U", "E43_C", "E43_Narrative", // Others
+
+    // Section F1: Arrival Duties (F11 - F14 + F15_Others)
     "F11_SOP", "F11_T", "F11_E", "F11_U", "F11_C", "F11_Narrative",
     "F12_SOP", "F12_T", "F12_E", "F12_U", "F12_C", "F12_Narrative",
     "F13_SOP", "F13_T", "F13_E", "F13_U", "F13_C", "F13_Narrative",
     "F14_SOP", "F14_T", "F14_E", "F14_U", "F14_C", "F14_Narrative",
+    "F15_SOP", "F15_T", "F15_E", "F15_U", "F15_C", "F15_Narrative", // Others
+
+    // Section F2: Disembarkation Process (F21 - F24 + F25_Others)
     "F21_SOP", "F21_T", "F21_E", "F21_U", "F21_C", "F21_Narrative",
     "F22_SOP", "F22_T", "F22_E", "F22_U", "F22_C", "F22_Narrative",
     "F23_SOP", "F23_T", "F23_E", "F23_U", "F23_C", "F23_Narrative",
     "F24_SOP", "F24_T", "F24_E", "F24_U", "F24_C", "F24_Narrative",
+    "F25_SOP", "F25_T", "F25_E", "F25_U", "F25_C", "F25_Narrative", // Others
+
+    // Section F3: Post-Flight Cabin Checks (F31 - F33 + F34_Others)
     "F31_SOP", "F31_T", "F31_E", "F31_U", "F31_C", "F31_Narrative",
     "F32_SOP", "F32_T", "F32_E", "F32_U", "F32_C", "F32_Narrative",
     "F33_SOP", "F33_T", "F33_E", "F33_U", "F33_C", "F33_Narrative",
+    "F34_SOP", "F34_T", "F34_E", "F34_U", "F34_C", "F34_Narrative", // Others
+
+    // Section G1: Crew Debrief (G11 - G13 + G14_Others)
     "G11_SOP", "G11_T", "G11_E", "G11_U", "G11_C", "G11_Narrative",
     "G12_SOP", "G12_T", "G12_E", "G12_U", "G12_C", "G12_Narrative",
     "G13_SOP", "G13_T", "G13_E", "G13_U", "G13_C", "G13_Narrative",
-    "G21_SOP", "G21_T", "G21_E", "G21_U", "G21_C", "G21_Narrative",
-    "sigThreat", "sigError", "effectiveCm", "generalComments", 
-    "areasOfStrength", "opportunitiesForImprovement", "observerSignature", "reportCompletionDate"
-];
+    "G14_SOP", "G14_T", "G14_E", "G14_U", "G14_C", "G14_Narrative", // Others
 
+    // Section G2: Reporting System (G21 + G22_Others)
+    "G21_SOP", "G21_T", "G21_E", "G21_U", "G21_C", "G21_Narrative",
+    "G22_SOP", "G22_T", "G22_E", "G22_U", "G22_C", "G22_Narrative", // Others
+
+    // Summary Fields
+    "sigThreat", "sigError", "effectiveCm", "generalComments", 
+    "areasOfStrength", "opportunitiesForImprovement", 
+    "observerSignature", "reportCompletionDate"
+];
 let auth;
 try {
     auth = new google.auth.GoogleAuth({
