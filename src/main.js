@@ -7,8 +7,290 @@ import './style.css';
 // =================================================================
 const TEM_CODES = { THREATS: { T_TE: "TE: Environmental", T_TO: "TO: Operational", T_TC: "TC: Cabin/Passenger", T_TT: "TT: Team/Crew", T_TL: "TL: Latent" }, ERRORS: { E_EP: "EP: Procedural", E_EC: "EC: Communication", E_ED: "ED: Decision", E_ES: "ES: Skill-based", E_EV: "EV: Violation (Intentional)" }, UCS: { U_SOP: "UCS-SOP: Deviation from SOP", U_EQP: "UCS-EQP: Incorrect Equipment use", U_PAX: "UCS-PAX: Compromised PAX safety", U_COM: "UCS-COM: Degraded Communication" }, CM: { C_PLN: "CM-PLN: Planning", C_SOP: "CM-SOP: Procedural", C_COM: "CM-COM: Communication", C_MON: "CM-MON: Monitoring", C_WSM: "CM-WSM: Workload/Systems Management", C_SPT: "CM-SPT: Support/Teamwork" } };
 const TEM_OPTIONS_MAP = { 'T': TEM_CODES.THREATS, 'E': TEM_CODES.ERRORS, 'U': TEM_CODES.UCS, 'C': TEM_CODES.CM };
-const CHECKLIST_DEFINITIONS = [ { id: 'A', title: 'A. Pre-Flight & Crew Briefing', items: [ { id: 'A1', label: '1. Crew Briefing (All Crew - Flight & Cabin)', isGroup: true, subItems: [ { id: 'A11', label: '- Attendance/ Punctuality/ Grooming' }, { id: 'A12', label: '- Documentation (Flight document)' }, { id: 'A13', label: '- Review updated safety information' }, { id: 'A14', label: '- Safety/First aid/Security/DG Review' }, { id: 'A15', label: '- Service Review (if applicable)' }, { id: 'A16', label: '- TEM discussion (anticipated threats)' }, { id: 'A17', label: '- Crew Co-ordination & Communication established' } ]}, { id: 'A2', label: '2. Cabin Crew Briefing (Cabin Specific)', isGroup: true, subItems: [ { id: 'A21', label: '- Allocation of CC station' }, { id: 'A22', label: '- A/C type and equipment fitted' }, { id: 'A23', label: '- Emergency Procedures Review' }, { id: 'A24', label: '- Security Procedures Review (e.g., checked, search, risk level)' }, { id: 'A25', label: '- Special Categoried Passenger Info (e.g., PRMs, YPTA)' } ]}, { id: 'A3', label: '3. Pre-Flight Cabin Checks', isGroup: true, subItems: [ { id: 'A31', label: '- Doors (pre-flight check, serviceablility)' }, { id: 'A32', label: '- Emergency Equipment (location, serviceability)' }, { id: 'A33', label: '- Security Checks (cabin, lavatories, galleys, attendant station)' }, { id: 'A34', label: '- Cabin Cleanliness & Appearance' }, { id: 'A35', label: '- Catering/Supplies (if applicable)' }, { id: 'A36', label: '- Interphone/PA System Check' } ]} ]}, { id: 'B', title: 'B. Boarding', items: [ { id: 'B1', label: '1. Passenger Greeting & Assistance', isGroup: true, subItems: [ { id: 'B11', label: '- Monitoring carry-on baggage (size, quantity)' }, { id: 'B12', label: '- Refuelling procedure' }, { id: 'B13', label: '- Exit row briefing & compliance' }, { id: 'B14', label: '- Assistance and briefing to special categoried passengers (e.g., PRMs)' }, { id: 'B15', label: '- Managing passenger flow' } ]}, { id: 'B2', label: '2. Pre-Departure Cabin Secure', isGroup: true, subItems: [ { id: 'B21', label: '- Overhead bins closed' }, { id: 'B22', label: '- Galley equipment secured' }, { id: 'B23', label: '- Doors/Aisles/Exits clear' }, { id: 'B24', label: '- Passenger count reconciliation' }, { id: 'B25', label: '- Doors armed / Cross-check procedure' }, { id: 'B26', label: '- Welcome Announcement' } ]}, { id: 'B3', label: '3. Safety Demonstration', isGroup: true, subItems: [ { id: 'B31', label: '- Clarity, accuracy, visibility' }, { id: 'B32', label: '- Passenger attentiveness (managed if needed)' } ]} ]}, { id: 'C', title: 'C. Taxi-Out, Take-off & Climb', items: [ { id: 'C1', label: '1. Final Cabin Checks', isGroup: true, subItems: [ { id: 'C11', label: '- Take off preparation' }, { id: 'C12', label: '- Report cabin readiness' }, { id: 'C13', label: '- Cabin lighting' }, { id: 'C14', label: '- Performing Brace position' } ]}, { id: 'C2', label: '2. Response to Take-off/Climb', isGroup: true, subItems: [ { id: 'C21', label: '- Sterile Flight Deck Adherence' }, { id: 'C22', label: '- Monitoring cabin condition' }, { id: 'C23', label: '- Awareness of adhoc situation' } ]} ]}, { id: 'D', title: 'D. Cruise', items: [ { id: 'D1', label: '1. Service Delivery (if applicable)', isGroup: true, subItems: [ { id: 'D11', label: '- Efficiency, safety during service' }, { id: 'D12', label: '- Galley management' } ]}, { id: 'D2', label: '2. Cabin Surveillance', isGroup: true, subItems: [ { id: 'D21', label: '- Periodically check cabin' }, { id: 'D22', label: '- Periodically check on flight crew' }, { id: 'D23', label: '- Periodically check Lavatory' }, { id: 'D24', label: '- Response to call light and Reset' } ]}, { id: 'D3', label: '3. Passenger Handling (if any)', isGroup: true, subItems: [ { id: 'D31', label: '- Medical situations' }, { id: 'D32', label: '- Unruly/disruptive passengers' }, { id: 'D33', label: '- Others' } ]}, { id: 'D4', label: '4. Communication with Flight Crew (if any)', isGroup: true, subItems: [ { id: 'D41', label: '- Reporting irregularities (If any)' } ]}, { id: 'D5', label: '5. Turbulence Management', isGroup: true, subItems: [ { id: 'D51', label: '- Follow turbulance management procedure' }, { id: 'D52', label: '- Secure self' } ]} ]}, { id: 'E', title: 'E. Descent, Approach & Landing', items: [ { id: 'E1', label: '1. Pre-Landing Announcements & Cabin Prep', isGroup: true, subItems: [ { id: 'E11', label: '- Pre-landing preparation' } ]}, { id: 'E2', label: '2. Final Cabin Checks (Landing)', isGroup: true, subItems: [ { id: 'E21', label: '- Seatbelts, tray tables, seatbacks, PEDs, etc.' }, { id: 'E22', label: '- Report cabin readiness' }, { id: 'E23', label: '- Cabin lighting' }, { id: 'E24', label: '- Performing Brace position' } ]}, { id: 'E3', label: '3. Sterile Flight Deck Adherence' }, { id: 'E4', label: '4. Response to Landing', isGroup: true, subItems: [ { id: 'E41', label: '- Monitoring cabin condition' }, { id: 'E42', label: '- Awareness of adhoc situation' } ]} ]}, { id: 'F', title: 'F. Taxi-In & Disembarkation', items: [ { id: 'F1', label: '1. Arrival Duties', isGroup: true, subItems: [ { id: 'F11', label: '- Arrival Announcement' }, { id: 'F12', label: '- Cabin monitoring' }, { id: 'F13', label: '- Doors Disarmed / Cross-check procedure' }, { id: 'F14', label: '- Doors Opening Procedure' } ]}, { id: 'F2', label: '2. Disembarkation Process', isGroup: true, subItems: [ { id: 'F21', label: '- Cabin monitoring' }, { id: 'F22', label: '- Assistance to special categoried passenger' }, { id: 'F23', label: '- Refueling procedure (If any)' }, { id: 'F24', label: '- Cabin check after passenger disembarkation and Report' } ]}, { id: 'F3', label: '3. Post-Flight Cabin Checks', isGroup: true, subItems: [ { id: 'F31', label: '- Perform Security Checks' }, { id: 'F32', label: '- Perform transit duties' }, { id: 'F33', label: '- Reporting cabin defects (If any)' } ]} ]}, { id: 'G', title: 'G. Post-Flight / Debrief (Observed if possible)', items: [ { id: 'G1', label: '1. Crew Debrief', isGroup: true, subItems: [ { id: 'G11', label: '- Discussion of flight events' }, { id: 'G12', label: '- Sharing idea' }, { id: 'G13', label: '- Feedback on TEM' } ]}, { id: 'G2', label: '2. Reporting System', isGroup: true, subItems: [ { id: 'G21', label: '- Redeye' } ]} ]} ];
-
+const CHECKLIST_DEFINITIONS = [
+  {
+    id: 'A',
+    title: 'A. Pre-Flight & Crew Briefing',
+    items: [
+      {
+        id: 'A1',
+        label: '1. Crew Briefing (All Crew - Flight & Cabin)',
+        isGroup: true,
+        subItems: [
+          { id: 'A11', label: '- Attendance/ Punctuality/ Grooming' },
+          { id: 'A12', label: '- Documentation (Flight document)' },
+          { id: 'A13', label: '- Review updated safety information' },
+          { id: 'A14', label: '- Safety/First aid/Security/DG Review' },
+          { id: 'A15', label: '- Service Review (if applicable)' },
+          { id: 'A16', label: '- TEM discussion (anticipated threats)' },
+          { id: 'A17', label: '- Crew Co-ordination & Communication established' },
+          { id: 'A18', label: '- Others' }
+        ]
+      },
+      {
+        id: 'A2',
+        label: '2. Cabin Crew Briefing (Cabin Specific)',
+        isGroup: true,
+        subItems: [
+          { id: 'A21', label: '- Allocation of CC station' },
+          { id: 'A22', label: '- A/C type and equipment fitted' },
+          { id: 'A23', label: '- Emergency Procedures Review' },
+          { id: 'A24', label: '- Security Procedures Review (e.g., checked, search, risk level)' },
+          { id: 'A25', label: '- Special Categoried Passenger Info (e.g., PRMs, YPTA)' },
+          { id: 'A26', label: '- Others' }
+        ]
+      },
+      {
+        id: 'A3',
+        label: '3. Pre-Flight Cabin Checks',
+        isGroup: true,
+        subItems: [
+          { id: 'A31', label: '- Doors (pre-flight check, serviceablility)' },
+          { id: 'A32', label: '- Emergency Equipment (location, serviceability)' },
+          { id: 'A33', label: '- Security Checks (cabin, lavatories, galleys, attendant station)' },
+          { id: 'A34', label: '- Cabin Cleanliness & Appearance' },
+          { id: 'A35', label: '- Catering/Supplies (if applicable)' },
+          { id: 'A36', label: '- Interphone/PA System Check' },
+          { id: 'A37', label: '- Others' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'B',
+    title: 'B. Boarding',
+    items: [
+      {
+        id: 'B1',
+        label: '1. Passenger Greeting & Assistance',
+        isGroup: true,
+        subItems: [
+          { id: 'B11', label: '- Monitoring carry-on baggage (size, quantity)' },
+          { id: 'B12', label: '- Refuelling procedure' },
+          { id: 'B13', label: '- Exit row briefing & compliance' },
+          { id: 'B14', label: '- Assistance and briefing to special categoried passengers (e.g., PRMs)' },
+          { id: 'B15', label: '- Managing passenger flow' },
+          { id: 'B16', label: '- Others' }
+        ]
+      },
+      {
+        id: 'B2',
+        label: '2. Pre-Departure Cabin Secure',
+        isGroup: true,
+        subItems: [
+          { id: 'B21', label: '- Overhead bins closed' },
+          { id: 'B22', label: '- Galley equipment secured' },
+          { id: 'B23', label: '- Doors/Aisles/Exits clear' },
+          { id: 'B24', label: '- Passenger count reconciliation' },
+          { id: 'B25', label: '- Doors armed / Cross-check procedure' },
+          { id: 'B26', label: '- Welcome Announcement' },
+          { id: 'B27', label: '- Others' }
+        ]
+      },
+      {
+        id: 'B3',
+        label: '3. Safety Demonstration',
+        isGroup: true,
+        subItems: [
+          { id: 'B31', label: '- Clarity, accuracy, visibility' },
+          { id: 'B32', label: '- Passenger attentiveness (managed if needed)' },
+          { id: 'B33', label: '- Others' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'C',
+    title: 'C. Taxi-Out, Take-off & Climb',
+    items: [
+      {
+        id: 'C1',
+        label: '1. Final Cabin Checks',
+        isGroup: true,
+        subItems: [
+          { id: 'C11', label: '- Take off preparation' },
+          { id: 'C12', label: '- Report cabin readiness' },
+          { id: 'C13', label: '- Cabin lighting' },
+          { id: 'C14', label: '- Performing Brace position' },
+          { id: 'C15', label: '- Others' }
+        ]
+      },
+      {
+        id: 'C2',
+        label: '2. Response to Take-off/Climb',
+        isGroup: true,
+        subItems: [
+          { id: 'C21', label: '- Sterile Flight Deck Adherence' },
+          { id: 'C22', label: '- Monitoring cabin condition' },
+          { id: 'C23', label: '- Awareness of adhoc situation' },
+          { id: 'C24', label: '- Others' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'D',
+    title: 'D. Cruise',
+    items: [
+      {
+        id: 'D1',
+        label: '1. Service Delivery (if applicable)',
+        isGroup: true,
+        subItems: [
+          { id: 'D11', label: '- Efficiency, safety during service' },
+          { id: 'D12', label: '- Galley management' },
+          { id: 'D13', label: '- Others' }
+        ]
+      },
+      {
+        id: 'D2',
+        label: '2. Cabin Surveillance',
+        isGroup: true,
+        subItems: [
+          { id: 'D21', label: '- Periodically check cabin' },
+          { id: 'D22', label: '- Periodically check on flight crew' },
+          { id: 'D23', label: '- Periodically check Lavatory' },
+          { id: 'D24', label: '- Response to call light and Reset' },
+          { id: 'D25', label: '- Others' }
+        ]
+      },
+      {
+        id: 'D3',
+        label: '3. Passenger Handling (if any)',
+        isGroup: true,
+        subItems: [
+          { id: 'D31', label: '- Medical situations' },
+          { id: 'D32', label: '- Unruly/disruptive passengers' },
+          { id: 'D33', label: '- Others' }
+        ]
+      },
+      {
+        id: 'D4',
+        label: '4. Communication with Flight Crew (if any)',
+        isGroup: true,
+        subItems: [
+          { id: 'D41', label: '- Reporting irregularities (If any)' },
+          { id: 'D42', label: '- Others' }
+        ]
+      },
+      {
+        id: 'D5',
+        label: '5. Turbulence Management',
+        isGroup: true,
+        subItems: [
+          { id: 'D51', label: '- Follow turbulance management procedure' },
+          { id: 'D52', label: '- Secure self' },
+          { id: 'D53', label: '- Others' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'E',
+    title: 'E. Descent, Approach & Landing',
+    items: [
+      {
+        id: 'E1',
+        label: '1. Pre-Landing Announcements & Cabin Prep',
+        isGroup: true,
+        subItems: [
+          { id: 'E11', label: '- Pre-landing preparation' },
+          { id: 'E12', label: '- Others' }
+        ]
+      },
+      {
+        id: 'E2',
+        label: '2. Final Cabin Checks (Landing)',
+        isGroup: true,
+        subItems: [
+          { id: 'E21', label: '- Seatbelts, tray tables, seatbacks, PEDs, etc.' },
+          { id: 'E22', label: '- Report cabin readiness' },
+          { id: 'E23', label: '- Cabin lighting' },
+          { id: 'E24', label: '- Performing Brace position' },
+          { id: 'E25', label: '- Others' }
+        ]
+      },
+      { id: 'E3', label: '- Sterile Flight Deck Adherence' },
+      {
+        id: 'E4',
+        label: '3. Response to Landing',
+        isGroup: true,
+        subItems: [
+          { id: 'E41', label: '- Monitoring cabin condition' },
+          { id: 'E42', label: '- Awareness of adhoc situation' },
+          { id: 'E43', label: '- Others' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'F',
+    title: 'F. Taxi-In & Disembarkation',
+    items: [
+      {
+        id: 'F1',
+        label: '1. Arrival Duties',
+        isGroup: true,
+        subItems: [
+          { id: 'F11', label: '- Arrival Announcement' },
+          { id: 'F12', label: '- Cabin monitoring' },
+          { id: 'F13', label: '- Doors Disarmed / Cross-check procedure' },
+          { id: 'F14', label: '- Doors Opening Procedure' },
+          { id: 'F15', label: '- Others' }
+        ]
+      },
+      {
+        id: 'F2',
+        label: '2. Disembarkation Process',
+        isGroup: true,
+        subItems: [
+          { id: 'F21', label: '- Cabin monitoring' },
+          { id: 'F22', label: '- Assistance to special categoried passenger' },
+          { id: 'F23', label: '- Refueling procedure (If any)' },
+          { id: 'F24', label: '- Cabin check after passenger disembarkation and Report' },
+          { id: 'F25', label: '- Others' }
+        ]
+      },
+      {
+        id: 'F3',
+        label: '3. Post-Flight Cabin Checks',
+        isGroup: true,
+        subItems: [
+          { id: 'F31', label: '- Perform Security Checks' },
+          { id: 'F32', label: '- Perform transit duties' },
+          { id: 'F33', label: '- Reporting cabin defects (If any)' },
+          { id: 'F34', label: '- Others' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'G',
+    title: 'G. Post-Flight / Debrief (Observed if possible)',
+    items: [
+      {
+        id: 'G1',
+        label: '1. Crew Debrief',
+        isGroup: true,
+        subItems: [
+          { id: 'G11', label: '- Discussion of flight events' },
+          { id: 'G12', label: '- Sharing idea' },
+          { id: 'G13', label: '- Feedback on TEM' },
+          { id: 'G14', label: '- Others' }
+        ]
+      },
+      {
+        id: 'G2',
+        label: '2. Reporting System',
+        isGroup: true,
+        subItems: [
+          { id: 'G21', label: '- Redeye' },
+          { id: 'G22', label: '- Others' }
+        ]
+      }
+    ]
+  }
+];
 // =================================================================
 // == 3. HELPER FUNCTIONS ==
 // =================================================================
